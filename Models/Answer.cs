@@ -11,8 +11,7 @@ namespace API.Models
 
         public int QuestionId { get; set; }
 
-        [Required]
-        public bool IsCorrect { get; set; }
+        public int Score { get; set; }
 
         public PreparedAnswer ToPreparedAnswer()
         {
@@ -33,6 +32,12 @@ namespace API.Models
         public string Value { get; set; }
 
         public bool IsSelected { get; set; }
+    }
+
+    public class AnswerId
+    {
+        public int Id { get; set; }
+
     }
 
 }

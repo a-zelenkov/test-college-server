@@ -8,29 +8,29 @@
     <TimeStampOfAssociatedLegacyPublishXmlFile />
     <EncryptedPassword />
     <_PublishTargetUrl>ftp://bastion.somee.com/www.bastion.somee.com</_PublishTargetUrl>
-    <History>True|2021-07-09T08:05:28.7358811Z;True|2021-06-24T22:11:19.2224396+03:00;True|2021-06-24T21:20:40.3165251+03:00;True|2021-06-24T20:14:00.4391412+03:00;True|2021-06-24T18:09:09.1608764+03:00;</History>
+    <History>True|2021-10-10T16:15:03.3599793Z;True|2021-09-07T21:07:46.4096353+03:00;True|2021-09-07T19:49:53.6337727+03:00;True|2021-07-09T11:05:28.7358811+03:00;True|2021-06-24T22:11:19.2224396+03:00;True|2021-06-24T21:20:40.3165251+03:00;True|2021-06-24T20:14:00.4391412+03:00;True|2021-06-24T18:09:09.1608764+03:00;</History>
   </PropertyGroup>
   <ItemGroup>
     <File Include="API.deps.json">
-      <publishTime>07/09/2021 11:02:23</publishTime>
+      <publishTime>10/10/2021 19:12:07</publishTime>
     </File>
     <File Include="API.dll">
-      <publishTime>07/09/2021 11:02:22</publishTime>
+      <publishTime>10/10/2021 19:12:06</publishTime>
     </File>
     <File Include="API.exe">
-      <publishTime>07/09/2021 11:02:22</publishTime>
+      <publishTime>10/10/2021 19:12:06</publishTime>
     </File>
     <File Include="API.pdb">
-      <publishTime>07/09/2021 11:02:22</publishTime>
+      <publishTime>10/10/2021 19:12:06</publishTime>
     </File>
     <File Include="API.runtimeconfig.json">
-      <publishTime>06/24/2021 21:55:26</publishTime>
+      <publishTime>10/10/2021 19:12:07</publishTime>
     </File>
     <File Include="appsettings.Development.json">
       <publishTime>06/10/2021 12:49:50</publishTime>
     </File>
     <File Include="appsettings.json">
-      <publishTime>07/09/2021 10:45:13</publishTime>
+      <publishTime>10/10/2021 18:47:41</publishTime>
     </File>
     <File Include="Microsoft.Data.SqlClient.dll">
       <publishTime>08/26/2020 02:24:48</publishTime>
@@ -123,7 +123,7 @@
       <publishTime>11/15/2019 11:37:42</publishTime>
     </File>
     <File Include="web.config">
-      <publishTime>07/09/2021 11:02:36</publishTime>
+      <publishTime>10/10/2021 19:12:21</publishTime>
     </File>
   </ItemGroup>
 </Project>

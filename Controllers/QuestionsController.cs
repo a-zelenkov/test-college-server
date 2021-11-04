@@ -25,23 +25,36 @@ namespace API.Controllers
             if (HttpContext.Request.Headers.ContainsKey("Authorization"))
             {
                 string token = HttpContext.Request.Headers["Authorization"];
+                int testId = 0;
 
+                if (HttpContext.Request.Query.ContainsKey("test_id"))
+                {
+                    testId = int.Parse(HttpContext.Request.Query["test_id"]);
+                }
+            
                 User user = await db.Users.FirstOrDefaultAsync(x => x.Token == token);
 
                 if (user != null)
                 {
-                    if (user.IsTested)
+
+                    TestResult testResult = await db.TestResults.FirstOrDefaultAsync(x => x.UserId == user.Id && x.TestId == testId);
+
+                    bool isTested = testResult != null;
+
+                    if (isTested)
                     {
-                        return Ok(await db.TestResults.FirstOrDefaultAsync(x => x.UserId == user.Id));
+                        PrepearedTestResult prepearedTestResult = testResult.ToPrepearedTestResult();
+                        prepearedTestResult.Info = db.TestInfos.FirstOrDefault(x => x.Id == testResult.InfoId);
+                        return Ok(prepearedTestResult);
                     };
 
                     List<QuestionSecret> response = new();
 
-                    List<Question> questions = await db.Questions.ToListAsync();
+                    List<Question> questions = await db.Questions.Where(x => x.TestId == testId).ToListAsync();
 
                     foreach (Question question in questions)
                     {
-                        QuestionSecret questionBuilder = new()
+                        QuestionSecret questionBuilder = new() 
                         {
                             Id = question.Id,
                             Question = question,
@@ -64,7 +77,7 @@ namespace API.Controllers
                 }
             }
 
-            return Unauthorized("\"Unauthorized\"");       
+            return Unauthorized("\"Unauthorized\"");
         }
 
         [HttpGet]
@@ -74,22 +87,45 @@ namespace API.Controllers
             return await db.Answers.Where(x => x.QuestionId == id).ToArrayAsync();
         }
 
-        [HttpPost]
-        public async Task<ActionResult> PostQuestion(QuestionBuilder data)
+        [HttpGet]
+        [Route("tests")]
+        public async Task<Array> GetTests()
         {
-            Question question = data.Question;
+            return await db.Tests.ToArrayAsync();
+        }
 
-            await db.Questions.AddAsync(question);
+        [HttpPost]
+        public async Task<ActionResult> PostQuestion(TestBuilder data)
+        {
 
-            await db.SaveChangesAsync();
-
-            foreach (Answer answer in data.Answers)
+            Test test = new()
             {
-                answer.QuestionId = question.Id;
-                await db.Answers.AddAsync(answer);
-            }
+                Title = data.Title,
+                Description = data.Description,
+                Type = data.Type
+            };
 
+            await db.Tests.AddAsync(test);
             await db.SaveChangesAsync();
+
+            foreach (QuestionBuilder questionBuilder in data.Questions)
+            {
+                Question question = new()
+                {
+                    TestId = test.Id,
+                    Value = questionBuilder.Value,
+                };
+
+                await db.Questions.AddAsync(question);
+                await db.SaveChangesAsync();
+
+                foreach (Answer answer in questionBuilder.Answers)
+                {
+                    answer.QuestionId = question.Id;
+                    await db.Answers.AddAsync(answer);
+                    await db.SaveChangesAsync();
+                }
+            }
 
             return Ok("\"Success\"");
         }
@@ -97,7 +133,7 @@ namespace API.Controllers
         // POST api/questions/results
         [HttpPost]
         [Route("results")]
-        public async Task<ActionResult> PostResults(List<QuestionResult> data)
+        public async Task<ActionResult> PostResults(QuestionResult data)
         {
             if (HttpContext.Request.Headers.ContainsKey("Authorization"))
             {
@@ -110,26 +146,59 @@ namespace API.Controllers
                     TestResult result = new()
                     {
                         UserId = user.Id,
-                        Result = 0,
-                        QuestionsCount = db.Questions.Count(),
-                        AnswersCount = data.Count
+                        TestId = data.TestId,
+                        Type = db.Tests.FirstOrDefault(x => x.Id == data.TestId).Type,
+                        Score = 0,
+                        MostPopular = 0,
+                        QuestionsCount = data.QuestionsCount,
+                        AnswersCount = data.Answers.Count
                     };
 
-                    foreach (QuestionResult answer in data)
+                    List<Answer> answersList = new();
+
+                    foreach (AnswerId answer in data.Answers)
                     {
-                        if (await db.Answers.FirstOrDefaultAsync(x => x.Id == answer.Id && x.IsCorrect) != null)
-                        {
-                            result.Result++;
-                        }
+                        Answer answerInfo = await db.Answers.FirstOrDefaultAsync(x => x.Id == answer.Id);
+                        result.Score += answerInfo.Score;
+
+                        answersList.Add(answerInfo);
                     }
 
-                    user.IsTested = true;
+                    var answers = answersList.Where(x => x.Score > 0);
 
+                    if (answers.Count() > 0)
+                    {
+                        result.MostPopular = answers.GroupBy(x => x.Score).FirstOrDefault().Key;
+                    }
+
+                    if (result.Type == "graph")
+                    {
+                        TestInfo testInfo = new()
+                        {
+                            EducationType = answers.ToList().Find(x => x.Score == 1000).Value,
+                            EducationPlace = answers.ToList().Find(x => x.Score == 1001).Value,
+                            Graph1 = answers.Where(x => x.Score == 1).Count() * 11,
+                            Graph2 = answers.Where(x => x.Score == 2).Count() * 11 + 1,
+                            Graph3 = answers.Where(x => x.Score == 3).Count() * 11,
+                            Graph4 = answers.Where(x => x.Score == 4).Count() * 11,
+                            Graph5 = answers.Where(x => x.Score == 5).Count() * 11,
+                            Graph6 = answers.Where(x => x.Score == 6).Count() * 11,
+                        };
+
+                        db.TestInfos.Add(testInfo);
+                        db.SaveChanges();
+
+                        result.InfoId = testInfo.Id;
+                    }
+                  
                     db.Entry(user).State = EntityState.Modified;
                     db.TestResults.Add(result);
                     db.SaveChanges();
 
-                    return Ok(result);
+                    PrepearedTestResult testResult = result.ToPrepearedTestResult();
+                    testResult.Info = db.TestInfos.FirstOrDefault(x => x.Id == result.InfoId);
+
+                    return Ok(testResult);
                 }
             }
 

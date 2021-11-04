@@ -14,6 +14,8 @@ namespace API.Models
 
         public string Password { get; set; }
 
+        public string Social { get; set; }
+
         [Required]
         public string School { get; set; }
 
@@ -22,22 +24,9 @@ namespace API.Models
 
         public string Token { get; set; }
 
-        public bool IsTested { get; set; }
 
     }
 
-    public class TestResult
-    {
-        public int Id { get; set; }
-
-        public int UserId { get; set; }
-
-        public int Result { get; set; }
-
-        public int AnswersCount { get; set; }
-
-        public int QuestionsCount { get; set; }
-    }
 
     public class UserLogin
     {

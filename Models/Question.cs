@@ -7,6 +7,8 @@ namespace API.Models
     {
         public int Id { get; set; }
 
+        public int TestId { get; set; }
+
         [Required]
         public string Value { get; set; }
 
@@ -14,10 +16,7 @@ namespace API.Models
 
     public class QuestionBuilder
     {
-        public int Id { get; set; }
-
-        [Required]
-        public Question Question { get; set; }
+        public string Value { get; set; }
 
         [Required]
         public List<Answer> Answers { get; set; }
@@ -38,7 +37,11 @@ namespace API.Models
 
     public class QuestionResult
     {
-        public int Id { get; set; }
+        public int TestId { get; set; }
+
+        public int QuestionsCount { get; set; }
+
+        public List<AnswerId> Answers { get; set; }
     }
 
 }

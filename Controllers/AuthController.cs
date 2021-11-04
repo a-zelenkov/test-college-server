@@ -49,6 +49,11 @@ namespace API.Controllers
                 user.Password = GetHash(data.Password);
             }
 
+            if (data.Social != "")
+            {
+                user.Social = data.Social;
+            }
+
             user.Login = data.Login;
             user.Name = data.Name;
             user.School = data.School;
@@ -75,7 +80,7 @@ namespace API.Controllers
                 {
                     string newToken = GetHash($"{user.Login}{DateTime.Now}{user.Phone}");
 
-                    System.IO.File.WriteAllText("C:\\Users\\PC\\Desktop\\VISUAL STUDIO\\log.txt", DateTime.Now.ToString());
+/*                    System.IO.File.WriteAllText("C:\\Users\\PC\\Desktop\\VISUAL STUDIO\\log.txt", DateTime.Now.ToString());*/
 
                     TokenResponse response = new()
                     {

@@ -8,7 +8,9 @@ namespace API.Models
         public DbSet<Question> Questions { get; set; }
         public DbSet<Answer> Answers { get; set; }
         public DbSet<TestResult> TestResults { get; set; }
-
+        public DbSet<Test> Tests { get; set; }
+        public DbSet<TestInfo> TestInfos { get; set; }
+        
         public DataBaseContext(DbContextOptions<DataBaseContext> options)
             : base(options)
         {
